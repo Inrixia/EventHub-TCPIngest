@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kordiaraw
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: kordiaraw
+  template:
+    metadata:
+      labels:
+        app: kordiaraw
+    spec:
+      containers:
+      - name: kordiaraw
+        image: mdasandboxcontaineregistry.azurecr.io/kordiaraw:latest
+        ports:
+        - containerPort: 80
