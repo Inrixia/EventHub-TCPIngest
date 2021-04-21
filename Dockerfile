@@ -21,4 +21,4 @@ COPY ./src /app/src
 RUN tsc
 
 # Runs container start
-CMD node ./dist/ingest.js
+CMD npm start

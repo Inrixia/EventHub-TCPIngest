@@ -7,9 +7,10 @@ let lastReceivedLine = "";
 
 http.createServer((req, res) => {
 	res.write(JSON.stringify({
+		version: process.env.npm_package_version,
 		linesReceived: linesReceived-1,
-		receivedBytes,
-		lastReceivedLine
+		lastReceivedLine,
+		receivedBytes
 	}))
 	res.end();
 }).listen(80);
