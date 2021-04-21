@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: kordiaraw
-        image: mdasandboxcontaineregistry.azurecr.io/kordiaraw:${{ github.event.head_commit.message }}
+        image: mdasandboxcontaineregistry.azurecr.io/kordiaraw:${{ github.sha }}
         ports:
         - containerPort: 80
