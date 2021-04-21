@@ -45,7 +45,6 @@ jobs:
         container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         secret-name: ${{ env.SECRET }}
         namespace: ${{ env.NAMESPACE }}
-        force: true
     
     - name: Deploy app to AKS
       uses: azure/k8s-deploy@v1
