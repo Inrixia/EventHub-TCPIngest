@@ -1,5 +1,5 @@
-const net = require('net');
-const http = require('http');
+import net from 'net';
+import http from 'http';
 
 let linesReceived = 0;
 let receivedBytes = 0;
@@ -26,6 +26,7 @@ ingestSocket.on('data', data => {
 	dataBuffer += data.toString();
 
 	let startIndex = 0;
+	let messageEndIndex = 0;
 	while ((messageEndIndex = dataBuffer.indexOf('\n', startIndex)) !== -1) {
 		linesReceived++
 
