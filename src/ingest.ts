@@ -1,79 +1,91 @@
 import net from "net";
 import http from "http";
 
-import { EventHubProducerClient } from "@azure/event-hubs";
+// import { EventHubProducerClient } from "@azure/event-hubs";
 
-const connectionString = "MDASandbox-eventHubs.servicebus.windows.net";
-const eventHubName = "kordiaraw";
+import { DefaultAzureCredential } from "@azure/identity";
+import { SecretClient } from "@azure/keyvault-secrets";
 
-const producer = new EventHubProducerClient(connectionString, eventHubName);
+const client = new SecretClient("https://mdasandbox-keys.vault.azure.net", new DefaultAzureCredential());
 
-let receivedLines = 0;
-let receivedBytes = 0;
-let lastReceivedLine = "";
+// const credential = new DefaultAzureCredential();
 
-let sentLines = 0;
-let sentBytes = 0;
-let lastSentLine = "";
+// const connectionString = "MDASandbox-eventHubs.servicebus.windows.net";
+// const eventHubName = "kordiaraw";
 
-http.createServer((req, res) => {
-	res.write(JSON.stringify({
-		version: process.env.npm_package_version,
-		received: {
-			lines: receivedLines-1,
-			bytes: receivedBytes,
-			lastLine: lastReceivedLine,
-		},
-		sent: {
-			lines: sentLines,
-			bytes: sentBytes,
-			lastLine: lastSentLine,
-		}
-	}));
+// const producer = new EventHubProducerClient(connectionString, eventHubName);
+
+http.createServer(async (req, res) => {
+	res.write(JSON.stringify(await client.getSecret("testSecret")));
 	res.end();
 }).listen(80);
 
-let lineBuffer = "";
-let lineBytes = 0;
-const ingestSocket = new net.Socket();
+// let receivedLines = 0;
+// let receivedBytes = 0;
+// let lastReceivedLine = "";
 
-ingestSocket.on("close", () => {
-	throw new Error("Connection closed");
-});
+// let sentLines = 0;
+// let sentBytes = 0;
+// let lastSentLine = "";
 
-ingestSocket.on("data", async data => {
-	receivedBytes += data.byteLength;
-	lineBytes += data.byteLength;
-	lineBuffer += data.toString();
+// http.createServer((req, res) => {
+// 	res.write(JSON.stringify({
+// 		version: process.env.npm_package_version,
+// 		received: {
+// 			lines: receivedLines-1,
+// 			bytes: receivedBytes,
+// 			lastLine: lastReceivedLine,
+// 		},
+// 		sent: {
+// 			lines: sentLines,
+// 			bytes: sentBytes,
+// 			lastLine: lastSentLine,
+// 		}
+// 	}));
+// 	res.end();
+// }).listen(80);
+
+// let lineBuffer = "";
+// let lineBytes = 0;
+// const ingestSocket = new net.Socket();
+
+// ingestSocket.on("close", () => {
+// 	throw new Error("Connection closed");
+// });
+
+// ingestSocket.on("data", async data => {
+// 	receivedBytes += data.byteLength;
+// 	lineBytes += data.byteLength;
+// 	lineBuffer += data.toString();
 	
-	let startIndex = 0;
-	let messageEndIndex = 0;
-	while ((messageEndIndex = lineBuffer.indexOf("\n", startIndex)) !== -1) {
-		const joinedLine = lineBuffer.slice(startIndex, messageEndIndex).replace("\n", "").replace("\r", "");
-		lastReceivedLine = joinedLine;
-		receivedLines++;
+// 	let startIndex = 0;
+// 	let messageEndIndex = 0;
+// 	while ((messageEndIndex = lineBuffer.indexOf("\n", startIndex)) !== -1) {
+// 		const joinedLine = lineBuffer.slice(startIndex, messageEndIndex).replace("\n", "").replace("\r", "");
+// 		lastReceivedLine = joinedLine;
+// 		receivedLines++;
 
-		if (receivedLines !== 1) {
-			// process.stdout.write(`${JSON.stringify(lastReceivedLine)}\nReceived: ${receivedLines-1}, ${(receivedBytes/1000/1000).toFixed(2)} MB\r`)
+// 		if (receivedLines !== 1) {
+// 			// process.stdout.write(`${JSON.stringify(lastReceivedLine)}\nReceived: ${receivedLines-1}, ${(receivedBytes/1000/1000).toFixed(2)} MB\r`)
 
-			// Send the batch to the event hub.
-			await producer.sendBatch([{
-				body: joinedLine,
-				properties: {
-					receivedTime: Date.now()
-				}
-			}]).catch(console.error);
-			lastSentLine = joinedLine;
-			sentLines++;
-			sentBytes += lineBytes;
-		}
+// 			// Send the batch to the event hub.
+// 			await producer.sendBatch([{
+// 				body: joinedLine,
+// 				properties: {
+// 					receivedTime: Date.now()
+// 				}
+// 			}]).catch(console.error);
+// 			lastSentLine = joinedLine;
+// 			sentLines++;
+// 			sentBytes += lineBytes;
+// 		}
 
-		startIndex = messageEndIndex + 1;
-	}
-	if (startIndex !== 0) lineBuffer = lineBuffer.slice(startIndex);
-});
+// 		startIndex = messageEndIndex + 1;
+// 	}
+// 	if (startIndex !== 0) lineBuffer = lineBuffer.slice(startIndex);
+// });
 
-const ip = "202.12.104.70";
-const port = 4004;
+// const ip = "202.12.104.70";
+// const port = 4004;
 
-ingestSocket.connect(port, ip, () => console.log(`Connected to ingest tcp socket on ${ip}:${port}`));
+// ingestSocket.connect(port, ip, () => console.log(`Connected to ingest tcp socket on ${ip}:${port}`));
