@@ -3,7 +3,7 @@ env:
   REGISTRY_NAME: mdasandboxcontaineregistry
   CLUSTER_NAME: MDASandbox-kubecluster
   CLUSTER_RESOURCE_GROUP: MDASandbox-rg
-  NAMESPACE: mdasandbox
+  NAMESPACE: kordiaraw
   APP_NAME: kordiaraw
   SECRET: kordiaraw
   
