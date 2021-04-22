@@ -6,7 +6,11 @@ import http from "http";
 import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 
-const client = new SecretClient("https://mdasandbox-keys.vault.azure.net", new DefaultAzureCredential());
+const getSecret = async () => {
+	const client = new SecretClient("https://mdasandbox-keys.vault.azure.net", new DefaultAzureCredential());
+	return JSON.stringify(await client.getSecret("testSecret"));
+};
+
 
 // const credential = new DefaultAzureCredential();
 
@@ -16,7 +20,7 @@ const client = new SecretClient("https://mdasandbox-keys.vault.azure.net", new D
 // const producer = new EventHubProducerClient(connectionString, eventHubName);
 
 http.createServer(async (req, res) => {
-	res.write(JSON.stringify(await client.getSecret("testSecret")));
+	res.write(JSON.stringify(await getSecret().catch(err => err)));
 	res.end();
 }).listen(80);
 
