@@ -7,7 +7,8 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 
 const getSecret = async () => {
-	if (process.env["KEYVAULTURI"] === undefined) throw new Error("Enviroment variable KEYVAULTURI is undefined!");
+	process.env["KEYVAULTURI"] = "https://mdasandbox-secrets.vault.azure.net";
+	if (process.env["KEYVAULTURI"] === undefined) return "Enviroment variable KEYVAULTURI is undefined!";
 	const client = new SecretClient(process.env["KEYVAULTURI"], new DefaultAzureCredential());
 	return await client.getSecret("cake");
 };
@@ -15,7 +16,10 @@ const getSecret = async () => {
 // const producer = new EventHubProducerClient(connectionString, eventHubName);
 
 http.createServer(async (req, res) => {
-	res.write(JSON.stringify(await getSecret().catch(err => err)));
+	res.write(JSON.stringify(await getSecret().catch(err => {
+		if (err.name === "AggregateAuthenticationError") err.desc = "DefaultAzureCredential() failed to authenticate!";
+		return err;
+	})));
 	res.end();
 }).listen(80);
 
