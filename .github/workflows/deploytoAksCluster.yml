@@ -46,6 +46,12 @@ jobs:
         secret-name: ${{ env.SECRET }}
         namespace: ${{ env.NAMESPACE }}
 
+    - name: Ensure Identity Binding name is Lowercase
+      env:
+        AZURE_IDENTITY_NAME: ${{ secrets.AZURE_IDENTITY_NAME }}
+      run: |
+        echo "AZURE_IDENTITY_BIND_NAME=${AZURE_IDENTITY_NAME,,}" >>${GITHUB_ENV}
+
     - name: Secret Injector
       uses: Inrixia/Secret-Injector@v1
       with:
