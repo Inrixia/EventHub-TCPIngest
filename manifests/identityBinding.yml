@@ -1,7 +1,7 @@
 apiVersion: "aadpodidentity.k8s.io/v1"
 kind: AzureIdentityBinding
 metadata:
-  name: ${{ env.AZURE_IDENTITY_NAME }}-binding
+  name: ${{ env.APP_NAME }}-binding
 spec:
   azureIdentity: ${{ secrets.AZURE_IDENTITY_NAME }}
-  selector: ${{ env.AZURE_IDENTITY_NAME }}
+  selector: ${{ env.APP_NAME }}
