@@ -52,6 +52,8 @@ jobs:
         manifests: |
           manifests/deployment.yml
           manifests/service.yml
+          manifests/identity.yml
+          manifests/identityBinding.yml
         images: |
           ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
         imagepullsecrets: |

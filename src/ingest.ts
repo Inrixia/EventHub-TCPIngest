@@ -7,15 +7,9 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 
 const getSecret = async () => {
-	const client = new SecretClient("https://mdasandbox-keys.vault.azure.net", new DefaultAzureCredential());
-	return JSON.stringify(await client.getSecret("testSecret"));
+	const client = new SecretClient("https://mdasandboxkubeclusterkv.vault.azure.net", new DefaultAzureCredential());
+	return await client.getSecret("cake");
 };
-
-
-// const credential = new DefaultAzureCredential();
-
-// const connectionString = "MDASandbox-eventHubs.servicebus.windows.net";
-// const eventHubName = "kordiaraw";
 
 // const producer = new EventHubProducerClient(connectionString, eventHubName);
 
