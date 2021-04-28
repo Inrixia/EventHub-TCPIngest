@@ -8,3 +8,5 @@ spec:
   - port: 80
   selector:
     app: ${{ secrets.APP_NAME }}
+  loadBalancerSourceRanges:
+  - ${{ secrets.WHITELISTED_IP }}
