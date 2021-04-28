@@ -7,7 +7,8 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 
 const getSecret = async () => {
-	const client = new SecretClient("${{ secrets.KEYVAULTURI }}", new DefaultAzureCredential());
+	if (process.env["KEYVAULTURI"] === undefined) throw new Error("Enviroment variable KEYVAULTURI is undefined!");
+	const client = new SecretClient(process.env["KEYVAULTURI"], new DefaultAzureCredential());
 	return await client.getSecret("cake");
 };
 

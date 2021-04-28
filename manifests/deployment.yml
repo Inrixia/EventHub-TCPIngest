@@ -16,5 +16,8 @@ spec:
       containers:
       - name: ${{ secrets.APP_NAME }}
         image: ${{ secrets.REGISTRY_NAME }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
+        env:
+        - name: KEYVAULTURI
+          value: ${{ secrets.KEYVAULTURI }}
         ports:
         - containerPort: 80
