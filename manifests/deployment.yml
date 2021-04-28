@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kordiaraw
+  name: ${{ env.APP_NAME }}
   labels:
-    aadpodidbinding: kordiaraw-pod
+    aadpodidbinding: ${{ secrets.AZURE_IDENTITY_NAME }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kordiaraw
+      app: ${{ env.APP_NAME }}
   template:
     metadata:
       labels:
-        app: kordiaraw
+        app: ${{ env.APP_NAME }}
     spec:
       containers:
-      - name: kordiaraw
-        image: mdasandboxcontaineregistry.azurecr.io/kordiaraw:${{ github.sha }}
+      - name: ${{ env.APP_NAME }}
+        image: mdasandboxcontaineregistry.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
         ports:
         - containerPort: 80

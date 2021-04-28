@@ -45,6 +45,12 @@ jobs:
         container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         secret-name: ${{ env.SECRET }}
         namespace: ${{ env.NAMESPACE }}
+
+    - name: Secret Injector
+      uses: Inrixia/Secret-Injector@v1
+      with:
+        secrets: ${{ toJson(secrets) }}
+        env: ${{ toJson(env) }}
     
     - name: Deploy app to AKS
       uses: azure/k8s-deploy@v1
