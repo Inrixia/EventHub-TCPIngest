@@ -7,7 +7,7 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 
 const getSecret = async () => {
-	const client = new SecretClient("https://mdasandboxkubeclusterkv.vault.azure.net", new DefaultAzureCredential());
+	const client = new SecretClient("${{ secrets.keyvaulturi }}", new DefaultAzureCredential());
 	return await client.getSecret("cake");
 };
 
