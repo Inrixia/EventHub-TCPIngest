@@ -6,6 +6,12 @@ jobs:
     steps:
     - name: Checkout code changes
       uses: actions/checkout@main
+
+    - name: Secret Injector
+      uses: Inrixia/Secret-Injector@v1
+      with:
+        secrets: ${{ toJson(secrets) }}
+        env: ${{ toJson(env) }}
     
     - name: Connect to Azure Container registry (ACR)
       uses: azure/docker-login@v1
@@ -44,12 +50,6 @@ jobs:
         IDENTITY_NAME: ${{ secrets.IDENTITY_NAME }}
       run: |
         echo "IDENTITY_NAME_LOWERCASE=${IDENTITY_NAME,,}" >>${GITHUB_ENV}
-
-    - name: Secret Injector
-      uses: Inrixia/Secret-Injector@v1
-      with:
-        secrets: ${{ toJson(secrets) }}
-        env: ${{ toJson(env) }}
     
     - name: Deploy app to AKS
       uses: azure/k8s-deploy@v1
