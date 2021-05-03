@@ -1,7 +1,7 @@
 import net from "net";
 import http from "http";
 
-import { EventHubProducerClient } from "@azure/event-hubs";
+import { EventData, EventHubProducerClient } from "@azure/event-hubs";
 import { DefaultAzureCredential } from "@azure/identity";
 
 if (process.env["EVENTHUB_FULLYQUALIFIED_NAMESPACE"] === undefined) throw new Error("Enviroment variable EVENTHUB_FULLYQUALIFIED_NAMESPACE is undefined!");
@@ -10,6 +10,16 @@ if (process.env["KORDIA_IP"] === undefined) throw new Error("Enviroment variable
 if (process.env["KORDIA_PORT"] === undefined) throw new Error("Enviroment variable KORDIA_PORT is undefined!");
 
 const eventHubProducer = new EventHubProducerClient(process.env["EVENTHUB_FULLYQUALIFIED_NAMESPACE"], process.env["EVENTHUB_NAME"], new DefaultAzureCredential());
+
+let messageQueue: Array<EventData> = [];
+const sendData = () => setTimeout(async () => {
+	if (messageQueue.length !== 0) {
+		await eventHubProducer.sendBatch(messageQueue).catch(console.error);
+		messageQueue = [];
+	}
+	sendData();
+});
+sendData();
 
 const kordiaIP = process.env["KORDIA_IP"];
 const kordiaPort = process.env["KORDIA_PORT"];
@@ -63,12 +73,12 @@ ingestSocket.on("data", async data => {
 			// process.stdout.write(`${JSON.stringify(lastReceivedLine)}\nReceived: ${receivedLines-1}, ${(receivedBytes/1000/1000).toFixed(2)} MB\r`)
 
 			// Send the batch to the event hub.
-			await eventHubProducer.sendBatch([{
+			messageQueue.push({
 				body: joinedLine,
 				properties: {
 					receivedTime: Date.now()
 				}
-			}]).catch(console.error);
+			});
 			lastSentLine = joinedLine;
 			sentLines++;
 			sentBytes += lineBytes;
