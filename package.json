@@ -7,12 +7,11 @@
   },
   "scripts": {
     "start": "node ./dist/ingest.js",
-    "compile-start": "tsc && npm run start"
+    "test": "tsc && npm run start"
   },
   "version": "0.0.1",
   "dependencies": {
     "@azure/event-hubs": "^5.5.0",
-    "@azure/identity": "^1.3.0",
-    "@azure/keyvault-secrets": "^4.1.0"
+    "@azure/identity": "^1.3.0"
   }
 }
