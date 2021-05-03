@@ -11,11 +11,18 @@ if (process.env["KORDIA_PORT"] === undefined) throw new Error("Enviroment variab
 
 const eventHubProducer = new EventHubProducerClient(process.env["EVENTHUB_FULLYQUALIFIED_NAMESPACE"], process.env["EVENTHUB_NAME"], new DefaultAzureCredential());
 
-let messageQueue: Array<EventData> = [];
+const messageQueue: { messages: Array<EventData>, bytes: number, lastLine: string } = {
+	messages: [],
+	bytes: 0,
+	lastLine: ""
+};
 const sendData = () => setTimeout(async () => {
-	if (messageQueue.length !== 0) {
-		await eventHubProducer.sendBatch(messageQueue).catch(console.error);
-		messageQueue = [];
+	if (messageQueue.messages.length !== 0) {
+		await eventHubProducer.sendBatch(messageQueue.messages).catch(console.error);
+		lastSentLine = messageQueue.lastLine;
+		sentLines += messageQueue.messages.length;
+		sentBytes += messageQueue.bytes;
+		messageQueue.messages = [];
 	}
 	sendData();
 });
@@ -73,15 +80,14 @@ ingestSocket.on("data", async data => {
 			// process.stdout.write(`${JSON.stringify(lastReceivedLine)}\nReceived: ${receivedLines-1}, ${(receivedBytes/1000/1000).toFixed(2)} MB\r`)
 
 			// Send the batch to the event hub.
-			messageQueue.push({
+			messageQueue.messages.push({
 				body: joinedLine,
 				properties: {
 					receivedTime: Date.now()
 				}
 			});
-			lastSentLine = joinedLine;
-			sentLines++;
-			sentBytes += lineBytes;
+			messageQueue.bytes += lineBytes;
+			messageQueue.lastLine = joinedLine;
 		}
 
 		startIndex = messageEndIndex + 1;
