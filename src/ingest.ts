@@ -18,12 +18,13 @@ const messageQueue: { messages: Array<EventData>, bytes: number, lastLine: strin
 };
 const sendData = () => setTimeout(async () => {
 	if (messageQueue.messages.length !== 0) {
-		await eventHubProducer.sendBatch(messageQueue.messages).catch(console.error);
+		const messagesToSend = [...messageQueue.messages];
 		lastSentLine = messageQueue.lastLine;
 		sentLines += messageQueue.messages.length;
 		sentBytes += messageQueue.bytes;
 		messageQueue.messages = [];
 		messageQueue.bytes = 0;
+		await eventHubProducer.sendBatch(messagesToSend).catch(console.error);
 	}
 	sendData();
 });
