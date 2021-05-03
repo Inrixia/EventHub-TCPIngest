@@ -23,6 +23,7 @@ const sendData = () => setTimeout(async () => {
 		sentLines += messageQueue.messages.length;
 		sentBytes += messageQueue.bytes;
 		messageQueue.messages = [];
+		messageQueue.bytes = 0;
 	}
 	sendData();
 });
