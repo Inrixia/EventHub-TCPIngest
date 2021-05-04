@@ -6,8 +6,12 @@ import { DefaultAzureCredential } from "@azure/identity";
 
 if (process.env["EVENTHUB_FULLYQUALIFIED_NAMESPACE"] === undefined) throw new Error("Enviroment variable EVENTHUB_FULLYQUALIFIED_NAMESPACE is undefined!");
 if (process.env["EVENTHUB_NAME"] === undefined) throw new Error("Enviroment variable EVENTHUB_NAME is undefined!");
+
 if (process.env["KORDIA_IP"] === undefined) throw new Error("Enviroment variable KORDIA_IP is undefined!");
 if (process.env["KORDIA_PORT"] === undefined) throw new Error("Enviroment variable KORDIA_PORT is undefined!");
+
+if (process.env["DEBUG_USER"] === undefined) throw new Error("Enviroment variable DEBUG_USER is undefined!");
+if (process.env["DEBUG_PASS"] === undefined) throw new Error("Enviroment variable DEBUG_USER is undefined!");
 
 const eventHubProducer = new EventHubProducerClient(process.env["EVENTHUB_FULLYQUALIFIED_NAMESPACE"], process.env["EVENTHUB_NAME"], new DefaultAzureCredential());
 
@@ -40,24 +44,32 @@ const sendData = () => setTimeout(async () => {
 sendData();
 
 http.createServer((req, res) => {
-	res.write(JSON.stringify({
-		version: process.env.npm_package_version,
-		received: {
-			lines: receivedLines-1,
-			bytes: receivedBytes,
-			lastLine: lastReceivedLine,
-		},
-		queued: {
-			lines: queuedMessages.length,
-			bytes: queuedBytes
-		},
-		sent: {
-			lines: sentLines,
-			bytes: sentBytes
-		}
-	}));
+	if (req.headers.authorization !== undefined) {
+		const [username, password] = Buffer.from(req.headers.authorization.replace("Basic ", ""), "base64").toString("ascii").split(":");
+		if (username !== process.env["DEBUG_USER"] && password !== process.env["DEBUG_PASS"]) {
+			console.error(`User ${JSON.stringify(username)} attempted to login using password ${JSON.stringify(password)}`);
+			res.writeHead(401, "Unauthorized", { "WWW-Authenticate": "Basic realm=\"E\"" });
+		} else res.write(JSON.stringify(restResponse()));
+	} else res.writeHead(401, "Unauthorized", { "WWW-Authenticate": "Basic realm=\"E\"" });
 	res.end();
 }).listen(80);
+
+const restResponse = () => ({
+	version: process.env.npm_package_version,
+	received: {
+		lines: receivedLines-1,
+		bytes: receivedBytes,
+		lastLine: lastReceivedLine,
+	},
+	queued: {
+		lines: queuedMessages.length,
+		bytes: queuedBytes
+	},
+	sent: {
+		lines: sentLines,
+		bytes: sentBytes
+	}
+});
 
 let lineBuffer = "";
 let lineBytes = 0;
