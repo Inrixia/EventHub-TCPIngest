@@ -25,5 +25,9 @@ spec:
           value: "${{ secrets.KORDIA_IP }}"
         - name: KORDIA_PORT
           value: "${{ secrets.KORDIA_PORT }}"
+        - name: DEBUG_USER
+          value: "${{ secrets.DEBUG_USER }}"
+        - name: DEBUG_PASS
+          value: "${{ secrets.DEBUG_PASS }}"
         ports:
         - containerPort: 80
