@@ -5,6 +5,8 @@ import { EventData, EventHubProducerClient } from "@azure/event-hubs";
 import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
 
+import { config } from "dotenv";
+config();
 (async () => {
 	if (process.env["KEYVAULT_URI"] === undefined) throw new Error("Enviroment variable KEYVAULT_URI is undefined!");
 	if (process.env["EVENTHUB_NAME"] === undefined) throw new Error("Enviroment variable EVENTHUB_NAME is undefined!");
