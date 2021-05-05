@@ -1,7 +1,10 @@
+---
+name: "deploy"
+
 on: [push]
   
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code changes
@@ -37,9 +40,12 @@ jobs:
         username: ${{ env.containerRegistryUsername }} 
         password: ${{ env.containerRegistryPassword }}
     
-    - name: Container build and push to a Azure Container Registry (ACR)
+    - name: Build container image
       run: |
         docker build . -t ${{ env.containerRegistryName }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
+
+    - name: Push container image to Azure Container Registry (ACR)
+      run: |
         docker push ${{ env.containerRegistryName }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
     
     - name: Set the target Azure Kubernetes Service (AKS) cluster. 
