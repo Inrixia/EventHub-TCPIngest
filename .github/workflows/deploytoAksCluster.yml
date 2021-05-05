@@ -21,7 +21,7 @@ jobs:
     - name: Get Azure Keyvault Secrets
       uses: Azure/get-keyvault-secrets@v1
       with:
-        keyvault: ${{ secrets.KEYVAULT_URI }}
+        keyvault: "${{ secrets.KEYVAULT_NAME }}"
         secrets: 'containerRegistryName, containerRegistryUsername, containerRegistryPassword, kubeclusterName, kubeclusterResourcegroup, whitelistedIP'
 
     - name: Secret Injector

@@ -9,4 +9,4 @@ spec:
   selector:
     app: ${{ secrets.APP_NAME }}
   loadBalancerSourceRanges:
-  - ${{ env.whitelistedIP }}
+    - ${{ env.whitelistedIP }}

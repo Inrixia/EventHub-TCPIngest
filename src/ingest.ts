@@ -10,7 +10,7 @@ import { SecretClient } from "@azure/keyvault-secrets";
 	if (process.env["EVENTHUB_NAME"] === undefined) throw new Error("Enviroment variable EVENTHUB_NAME is undefined!");
 	
 	const credential = new DefaultAzureCredential();
-	const client = new SecretClient(process.env["KEYVAULT_URI"], credential);
+	const client = new SecretClient(`https://${process.env["KEYVAULT_NAME"]}.vault.azure.net/`, credential);
 
 	const eventHubProducer = new EventHubProducerClient((await client.getSecret("eventHubFQNamespace")).name, process.env["EVENTHUB_NAME"], new DefaultAzureCredential());
 
