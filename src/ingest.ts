@@ -10,17 +10,17 @@ config();
 
 const envOrThrow = (envName: string): string => {
 	const envValue = process.env[envName];
-	if (envValue === undefined) throw new Error(`Enviroment variable ${envName} is undefined!`);
+	if (envValue === undefined) throw new Error(`Enviroment variable "${envName}" is undefined!`);
 	return envValue;
 };
 
 (async () => {
 	const credential = new DefaultAzureCredential();
-	const client = new SecretClient(`https://${envOrThrow("KEYVAULT_NAME")}.vault.azure.net/`, credential);
+	const secretClient = new SecretClient(`https://${envOrThrow("KEYVAULT_NAME")}.vault.azure.net/`, credential);
 
 	const secretOrThrow = async (secretName: string): Promise<string> => {
-		const secretValue = (await client.getSecret(secretName)).value;
-		if (secretValue === undefined) throw new Error(`Secret ${secretName} is undefined!`);
+		const secretValue = (await secretClient.getSecret(secretName)).value;
+		if (secretValue === undefined) throw new Error(`Secret "${secretName}" is undefined!`);
 		return secretValue;
 	};
 
