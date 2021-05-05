@@ -7,17 +7,27 @@ import { SecretClient } from "@azure/keyvault-secrets";
 
 import { config } from "dotenv";
 config();
+
+const envOrThrow = (envName: string): string => {
+	const envValue = process.env[envName];
+	if (envValue === undefined) throw new Error(`Enviroment variable ${envName} is undefined!`);
+	return envValue;
+};
+
 (async () => {
-	if (process.env["KEYVAULT_URI"] === undefined) throw new Error("Enviroment variable KEYVAULT_URI is undefined!");
-	if (process.env["EVENTHUB_NAME"] === undefined) throw new Error("Enviroment variable EVENTHUB_NAME is undefined!");
-	
 	const credential = new DefaultAzureCredential();
-	const client = new SecretClient(`https://${process.env["KEYVAULT_NAME"]}.vault.azure.net/`, credential);
+	const client = new SecretClient(`https://${envOrThrow("KEYVAULT_NAME")}.vault.azure.net/`, credential);
 
-	const eventHubProducer = new EventHubProducerClient((await client.getSecret("eventHubFQNamespace")).name, process.env["EVENTHUB_NAME"], new DefaultAzureCredential());
+	const secretOrThrow = async (secretName: string): Promise<string> => {
+		const secretValue = (await client.getSecret(secretName)).value;
+		if (secretValue === undefined) throw new Error(`Secret ${secretName} is undefined!`);
+		return secretValue;
+	};
 
-	const kordiaIP = (await client.getSecret("kordiaIP")).name;
-	const kordiaPort = +(await client.getSecret("kordiaPort")).name;
+	const eventHubProducer = new EventHubProducerClient(await secretOrThrow("eventHubFQNamespace"), envOrThrow("EVENTHUB_NAME"), new DefaultAzureCredential());
+
+	const kordiaIP = await secretOrThrow("kordiaIP");
+	const kordiaPort = +await secretOrThrow("kordiaPort");
 	
 	let receivedLines = 0;
 	let receivedBytes = 0;

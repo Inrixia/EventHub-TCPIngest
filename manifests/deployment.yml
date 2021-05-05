@@ -17,8 +17,8 @@ spec:
       - name: ${{ secrets.APP_NAME }}
         image: ${{ env.containerRegistryName }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
         env:
-        - name: KEYVAULT_URI
-          value: "${{ secrets.KEYVAULT_URI }}"
+        - name: KEYVAULT_NAME
+          value: "${{ secrets.KEYVAULT_NAME }}"
         - name: EVENTHUB_NAME
           value: "${{ secrets.EVENTHUB_NAME }}"
         ports:
