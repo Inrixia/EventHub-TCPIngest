@@ -15,15 +15,11 @@ spec:
     spec:
       containers:
       - name: ${{ secrets.APP_NAME }}
-        image: ${{ secrets.REGISTRY_NAME }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
+        image: ${{ env.containerRegistryName }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
         env:
-        - name: EVENTHUB_FULLYQUALIFIED_NAMESPACE
-          value: "${{ secrets.EVENTHUB_FULLYQUALIFIED_NAMESPACE }}"
+        - name: KEYVAULT_URI
+          value: "${{ secrets.KEYVAULT_URI }}"
         - name: EVENTHUB_NAME
           value: "${{ secrets.EVENTHUB_NAME }}"
-        - name: KORDIA_IP
-          value: "${{ secrets.KORDIA_IP }}"
-        - name: KORDIA_PORT
-          value: "${{ secrets.KORDIA_PORT }}"
         ports:
         - containerPort: 80
