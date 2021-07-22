@@ -13,7 +13,7 @@ config();
 	const tcpIP = await envOrThrow("TCP_IP");
 	const tcpPORT = +(await envOrThrow("TCP_PORT"));
 
-	const prefixSource = process.env["STATION_PREFIX"];
+	const prefixStation = process.env["STATION_PREFIX"];
 
 	const stats = {
 		version: process.env.npm_package_version,
@@ -75,12 +75,12 @@ config();
 		let messageEndIndex = 0;
 		while ((messageEndIndex = lineBuffer.indexOf("\n", startIndex)) !== -1) {
 			let joinedLine = lineBuffer.slice(startIndex, messageEndIndex).replace("\n", "").replace("\r", "");
-			stats.received.lastLine = joinedLine;
 			stats.received.lines++;
 
 			if (stats.received.lines !== 1) {
 				// Send the batch to the event hub.
-				if (prefixSource !== undefined) joinedLine = `\\s:${prefixSource}${joinedLine}`;
+				if (prefixStation !== undefined) joinedLine = `\\s:${prefixStation}${joinedLine}`;
+				stats.received.lastLine = joinedLine;
 				queuedMessages.push({
 					body: joinedLine,
 					properties: {
