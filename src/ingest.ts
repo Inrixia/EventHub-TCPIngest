@@ -37,13 +37,15 @@ config();
 		setTimeout(async () => {
 			if (queuedMessages.length !== 0) {
 				stats.sent.bytes += stats.queued.bytes;
-				stats.queued.bytes = 0;
-
 				stats.sent.lines += queuedMessages.length;
+
 				// Copy and clear queuedMessages before sending so we dont clear messages that are added while sending
 				const linesToSend = [...queuedMessages];
 				queuedMessages = [];
 				await eventHubProducer.sendBatch(linesToSend).catch(console.error);
+
+				stats.queued.lines = 0;
+				stats.queued.bytes = 0;
 			}
 			sendData();
 		});
