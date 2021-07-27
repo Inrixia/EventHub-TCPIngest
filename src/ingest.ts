@@ -48,7 +48,7 @@ config();
 				stats.queued.bytes = 0;
 			}
 			sendData();
-		});
+		}, 5000);
 	sendData();
 
 	http
@@ -78,7 +78,7 @@ config();
 			stats.received.lines++;
 
 			// Skip first message as its most likely incomplete, also filter only AIS messages
-			if (stats.received.lines !== 1 && joinedLine.includes("AIVDM")) {
+			if (stats.received.lines !== 1 /*&& joinedLine.includes("AIVDM")*/) {
 				// Send the batch to the event hub.
 				if (prefixStation !== undefined) joinedLine = `\\s:${prefixStation}${joinedLine}`;
 				stats.received.lastLine = joinedLine;
