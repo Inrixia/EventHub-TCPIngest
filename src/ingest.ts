@@ -77,7 +77,8 @@ config();
 			let joinedLine = lineBuffer.slice(startIndex, messageEndIndex).replace("\n", "").replace("\r", "");
 			stats.received.lines++;
 
-			if (stats.received.lines !== 1) {
+			// Skip first message as its most likely incomplete, also filter only AIS messages
+			if (stats.received.lines !== 1 && joinedLine.includes("AIVDM")) {
 				// Send the batch to the event hub.
 				if (prefixStation !== undefined) joinedLine = `\\s:${prefixStation}${joinedLine}`;
 				stats.received.lastLine = joinedLine;
