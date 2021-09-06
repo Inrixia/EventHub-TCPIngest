@@ -42,7 +42,10 @@ config();
 				// Copy and clear queuedMessages before sending so we dont clear messages that are added while sending
 				const linesToSend = [...queuedMessages];
 				queuedMessages = [];
-				await eventHubProducer.sendBatch(linesToSend).catch(console.error);
+				await eventHubProducer.sendBatch(linesToSend).catch((err) => {
+					console.error(err);
+					process.exit();
+				});
 
 				stats.queued.lines = 0;
 				stats.queued.bytes = 0;
