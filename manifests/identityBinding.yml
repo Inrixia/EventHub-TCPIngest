@@ -1,7 +1,0 @@
-apiVersion: "aadpodidentity.k8s.io/v1"
-kind: AzureIdentityBinding
-metadata:
-  name: ${{ env.IDENTITY_NAME_LOWERCASE }}-binding
-spec:
-  azureIdentity: ${{ env.IDENTITY_NAME_LOWERCASE }}
-  selector: ${{ env.IDENTITY_NAME_LOWERCASE }}-selector
