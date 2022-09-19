@@ -1,4 +1,17 @@
 {
+	"name": "eventhub-tcpingest",
+	"description": "[![deploy](https://github.com/Inrixia/MDASandbox-kube-kordia-raw/actions/workflows/deploytoAksCluster.yml/badge.svg)](https://github.com/Inrixia/MDASandbox-kube-kordia-raw/actions/workflows/deploytoAksCluster.yml)",
+	"main": "./dist/ingest.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Inrixia/EventHub-TCPIngest.git"
+	},
+	"author": "Inrixia",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Inrixia/EventHub-TCPIngest/issues"
+	},
+	"homepage": "https://github.com/Inrixia/EventHub-TCPIngest#readme",
 	"devDependencies": {
 		"@types/node": "^18.7.18",
 		"@typescript-eslint/eslint-plugin": "^5.37.0",
@@ -9,7 +22,6 @@
 		"prestart": "tsc",
 		"start": "node ./dist/ingest.js"
 	},
-	"version": "1.1.0",
 	"dependencies": {
 		"@azure/event-hubs": "^5.8.0",
 		"@inrixia/helpers": "^2.0.6",
