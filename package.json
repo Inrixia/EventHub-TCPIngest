@@ -15,12 +15,15 @@
 	"devDependencies": {
 		"@types/node": "^18.7.18",
 		"@typescript-eslint/eslint-plugin": "^5.37.0",
-		"eslint": "^8.23.1"
+		"esbuild": "^0.15.8",
+		"eslint": "^8.23.1",
+		"pkg": "^5.8.0"
 	},
 	"type": "module",
 	"scripts": {
 		"prestart": "tsc",
-		"start": "node ./dist/ingest.js"
+		"start": "node ./dist/ingest.js",
+		"build": "esbuild ./src/ingest.ts --bundle --platform=node --outfile=dist/ingest.cjs && pkg ./dist/ingest.cjs --out-path=./build -t latest-linux,latest-mac,latest-win --compress GZip"
 	},
 	"dependencies": {
 		"@azure/event-hubs": "^5.8.0",
