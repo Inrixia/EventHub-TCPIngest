@@ -40,8 +40,17 @@ config();
 	let lineBuffer = "";
 	const ingestSocket = new net.Socket();
 
-	ingestSocket.on("close", () => {
-		throw new Error("Connection closed");
+	ingestSocket.on("close", (hadError) => {
+		throw new Error(hadError ? "Socket closed with error!" : "Socket closed!");
+	});
+	ingestSocket.on("error", (err) => {
+		throw err;
+	});
+	ingestSocket.on("timeout", () => {
+		throw new Error("Socket timed out!");
+	});
+	ingestSocket.on("end", () => {
+		throw new Error("Socket ended!");
 	});
 
 	ingestSocket.on("data", async (data) => {
