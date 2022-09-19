@@ -19,6 +19,7 @@ config();
 
 	let queuedMessages: EventData[] = [];
 	let receivedLines = 0;
+	let sentLines = 0;
 
 	const sendData = async () => {
 		if (queuedMessages.length !== 0) {
@@ -29,7 +30,7 @@ config();
 				console.error(err);
 				process.exit();
 			});
-			console.log(`\rReceived ${receivedLines} lines`);
+			sentLines += linesToSend.length;
 		}
 		await sleep(5000);
 		sendData();
@@ -66,6 +67,7 @@ config();
 			startIndex = messageEndIndex + 1;
 		}
 		if (startIndex !== 0) lineBuffer = lineBuffer.slice(startIndex);
+		process.stdout.write(`\rReceived: ${receivedLines}, Sent: ${sentLines}`);
 	});
 	ingestSocket.connect(tcpPORT, tcpIP, () => console.log(`Connected to ingest tcp socket on ${tcpIP}:${tcpPORT}`));
 })();
