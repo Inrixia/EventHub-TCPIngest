@@ -9,11 +9,14 @@ const sleep = promisify(setTimeout);
 import { config } from "dotenv";
 config();
 
+type LogLevel = "fast" | "slow" | undefined;
+
 (async () => {
 	const eventHubProducer = new EventHubProducerClient(envOrThrow("EVENTHUB_CONNECTION_STRING"), envOrThrow("EVENTHUB_NAME"));
 
 	const tcpIP = envOrThrow("TCP_IP");
 	const tcpPORT = +envOrThrow("TCP_PORT");
+	const logging: LogLevel = <LogLevel>process.env["LOGLEVEL"];
 
 	const prefixStation = process.env["STATION_PREFIX"];
 
@@ -31,6 +34,7 @@ config();
 				process.exit();
 			});
 			sentLines += linesToSend.length;
+			if (logging === "slow") console.log(`Received: ${receivedLines}, Sent: ${sentLines}`);
 		}
 		await sleep(5000);
 		sendData();
@@ -76,7 +80,7 @@ config();
 			startIndex = messageEndIndex + 1;
 		}
 		if (startIndex !== 0) lineBuffer = lineBuffer.slice(startIndex);
-		process.stdout.write(`\rReceived: ${receivedLines}, Sent: ${sentLines}`);
+		if (logging === "fast") process.stdout.write(`\rReceived: ${receivedLines}, Sent: ${sentLines}`);
 	});
 	ingestSocket.connect(tcpPORT, tcpIP, () => console.log(`Connected to ingest tcp socket on ${tcpIP}:${tcpPORT}`));
 })();
