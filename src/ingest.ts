@@ -3,6 +3,9 @@ import net from "net";
 import { EventData, EventHubProducerClient } from "@azure/event-hubs";
 import { envOrThrow } from "@inrixia/helpers/object";
 
+import { promisify } from "util";
+const sleep = promisify(setTimeout);
+
 import { config } from "dotenv";
 config();
 
@@ -14,22 +17,23 @@ config();
 
 	const prefixStation = process.env["STATION_PREFIX"];
 
-	let queuedMessages: Array<EventData> = [];
+	let queuedMessages: EventData[] = [];
 	let receivedLines = 0;
 
-	const sendData = () =>
-		setTimeout(async () => {
-			if (queuedMessages.length !== 0) {
-				// Copy and clear queuedMessages before sending so we dont clear messages that are added while sending
-				const linesToSend = [...queuedMessages];
-				queuedMessages = [];
-				await eventHubProducer.sendBatch(linesToSend).catch((err) => {
-					console.error(err);
-					process.exit();
-				});
-			}
-			sendData();
-		}, 5000);
+	const sendData = async () => {
+		if (queuedMessages.length !== 0) {
+			// Copy and clear queuedMessages before sending so we dont clear messages that are added while sending
+			const linesToSend = [...queuedMessages];
+			queuedMessages = [];
+			await eventHubProducer.sendBatch(linesToSend).catch((err) => {
+				console.error(err);
+				process.exit();
+			});
+			console.log(`\rReceived ${receivedLines} lines`);
+		}
+		await sleep(5000);
+		sendData();
+	};
 	sendData();
 
 	let lineBuffer = "";
@@ -49,7 +53,7 @@ config();
 			receivedLines++;
 
 			// Skip first message as its most likely incomplete, also filter only AIS messages
-			if (receivedLines !== 1 /*&& joinedLine.includes("AIVDM")*/) {
+			if (receivedLines !== 1) {
 				// Send the batch to the event hub.
 				if (prefixStation !== undefined) joinedLine = `\\s:${prefixStation}${joinedLine}`;
 				queuedMessages.push({
@@ -59,7 +63,6 @@ config();
 					},
 				});
 			}
-
 			startIndex = messageEndIndex + 1;
 		}
 		if (startIndex !== 0) lineBuffer = lineBuffer.slice(startIndex);
